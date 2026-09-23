@@ -1,0 +1,50 @@
+"""หน้าเริ่มต้นเกม MATH MASTER"""
+import storage
+
+
+TITLE = "MATH MASTER"
+
+
+def build():
+	"""แสดงชื่อผู้เล่นที่บันทึกไว้และเมนูเริ่มต้นเกม"""
+	data = storage.load()
+	player_name = ""
+	for item in data:
+		if item.get("type") == "player":
+			player_name = item.get("name", "")
+
+	menu_items = []
+	for menu in ["เริ่มเกม", "เลือกระดับความยาก", "ดูคะแนนสูงสุด", "วิธีเล่น"]:
+		menu_items.append(menu)
+
+	return {"player_name": player_name, "menu_items": menu_items}
+
+
+def handle(form):
+	"""ตรวจสอบชื่อและเมนูที่ผู้เล่นเลือก"""
+	name = form.get("player_name", "").strip()
+	action = form.get("action", "")
+
+	if name == "":
+		return "กรุณากรอกชื่อผู้เล่นก่อนเลือกเมนู"
+	if action == "":
+		return "กรุณาเลือกเมนู"
+
+	data = storage.load()
+	found_player = False
+	for item in data:
+		if item.get("type") == "player":
+			item["name"] = name
+			found_player = True
+	if found_player is False:
+		data.append({"type": "player", "name": name})
+	storage.save(data)
+
+	if action == "เริ่มเกม":
+		return "ยินดีต้อนรับ " + name + " กำลังเริ่มเกม"
+	elif action == "เลือกระดับความยาก":
+		return "ยินดีต้อนรับ " + name + " กรุณาเลือกระดับความยาก"
+	elif action == "ดูคะแนนสูงสุด":
+		return "กำลังเปิดคะแนนสูงสุดของ " + name
+	else:
+		return "กำลังเปิดวิธีเล่นสำหรับ " + name
