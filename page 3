@@ -1,0 +1,26 @@
+"""หน้า Leaderboard ของเกม MATH MASTER"""
+import storage
+
+
+TITLE = "Leaderboard"
+
+
+def build():
+	"""อ่านคะแนนและเรียงผู้เล่นจากคะแนนสูงไปต่ำ"""
+	scores = []
+	for item in storage.load():
+		# ใช้ if คัดเฉพาะข้อมูลคะแนนของผู้เล่น
+		if item.get("type") == "score":
+			scores.append(item)
+
+	ranked = []
+	# ใช้ selection loop แบบ catalog/ranking เพื่อเลือกคะแนนสูงสุดก่อน
+	while len(scores) > 0:
+		best = scores[0]
+		for score in scores:
+			if score.get("score", 0) > best.get("score", 0):
+				best = score
+		ranked.append(best)
+		scores.remove(best)
+
+	return {"ranked": ranked, "top": ranked[0] if ranked else None}
